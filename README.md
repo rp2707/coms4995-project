@@ -13,6 +13,10 @@ Create an instance with the following specs:
 wget http://3dshapenets.cs.princeton.edu/3DShapeNetsCode.zip 
 ```
 
+## How to monitor GPU usage
+```shell
+nvidia-smi
+```
 ## References
 * [Using a GPU & TensorFlow on Google Cloud Platform](https://medium.com/google-cloud/using-a-gpu-tensorflow-on-google-cloud-platform-1a2458f42b0)
 * [TensorFlow Common Installation Problems](https://www.tensorflow.org/install/install_linux#common_installation_problems)

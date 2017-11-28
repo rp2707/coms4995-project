@@ -1,0 +1,7 @@
+3D-GAN
+
+- have run for 20K iterations on ModelNet40 chairs category
+- have not yet run on boats/cars/planes
+
+-tensorflow code is included
+-some python plotting / analyssi tools are included as well

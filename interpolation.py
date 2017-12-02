@@ -59,3 +59,21 @@ val = .5 #.5 to get midpoint
 interpolated = slerp(val, low, high)
 print(interpolated)
 """
+
+val_increment = 0.05
+current_val = 0
+current_interpolation = None
+while current_val < 1.0:
+  current_val += val_increment
+  low = np.ones(200)
+  high = np.arange(200)
+  interpolated = slerp(current_val, low, high).reshape((200, 1))
+
+  if current_interpolation is None:
+      current_interpolation = interpolated
+  else:
+      current_interpolation = np.concatenate((current_interpolation, interpolated), axis=1)
+
+print(current_interpolation)
+print(current_interpolation.shape)
+np.save('interpolated', current_interpolation)

@@ -1,6 +1,8 @@
 ## How to set up the cloud instance
 Create an instance with the following specs:
-1. TODO
+1. 6 vCPUs, 22.5 GB memory
+2. 1 x NVIDIA Tesla K80 GPU
+3. 500 GB Disk
 
 ## Environment Specification
 * Python 2.7.12

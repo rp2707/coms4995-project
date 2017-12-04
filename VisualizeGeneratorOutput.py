@@ -30,6 +30,9 @@ from mpl_toolkits.mplot3d import Axes3D
 path_to_pickle = r"C:\Users\Grey\Desktop\3DGAN_shah\save-1-2-20K.p"
 savename = '1-2-20K'
 
+npy = True #If should load a .npy file instead
+npy_path = r"multicategory\save-11600partial.npy"
+
 PlotHistograms = False
 PlotAllModels = True
 modelnum = 4 #which of the 3d models to visualize (up to int = batchsize) (32)
@@ -39,14 +42,20 @@ batchsize = 32
 # =============================================================================
 # Main
 # =============================================================================
-with open(path_to_pickle,'rb') as gg:
-    #g_objects = pickle.load(gg)
-    g_objects = pickle.load(gg,encoding='latin1')#since my laptop is py3 and we pickled them in py2, encoding is different
-    batchsize = g_objects.shape[0]
-    #print(g_objects)
+if not npy:
+    with open(path_to_pickle,'rb') as gg:
+        #g_objects = pickle.load(gg)
+        g_objects = pickle.load(gg,encoding='latin1')#since my laptop is py3 and we pickled them in py2, encoding is different
+    
+elif npy:
+    g_objects = np.load(npy_path)
+  
+    
+    
+batchsize = g_objects.shape[0]
+#print(g_objects)
 
-
-for k in range(16):#range(batchsize):
+for k in range(5):#range(batchsize):
     
     if not PlotAllModels and k!=modelnum:
         continue

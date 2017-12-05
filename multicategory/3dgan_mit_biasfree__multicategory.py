@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """
 Usage Examples:
-    [1] python 3dgan_mit_biasfree__multicategory.py --name biasfree
-    [2] python 3dgan_mit_biasfree__multicategory.py --ckpath models/biasfree.ckpt-100
+    [1] python 3dgan_mit_biasfree__multicategory.py --name biasfree_tfbn
+    [2] python 3dgan_mit_biasfree__multicategory.py --ckpath models/biasfree_tfbn.ckpt-100
+    generating new objects:
+    [3] python 3dgan_mit_biasfree__multicategory.py --train False --ckpath models/biasfree_tfbn.ckpt-16400
+    
+    interpolating given zvectors:
+    [4] python 3dgan_mit_biasfree.py --train False --ckpath models/biasfree_tfbn.ckpt-16400 --interpolatd_zs interpolated_chairs_37_39.npy
 """
 #import scipy
 import pickle
@@ -61,6 +66,7 @@ args.DEFINE_boolean('train', True, 'True for training, False for testing [%(defa
 args.DEFINE_boolean('dummy', False, 'True for random sampling as real input, False for ModelNet voxels as real input [%(default)s]')
 args.DEFINE_string('name', model_name, 'Model name [%(default)s]')
 args.DEFINE_string('ckpath', None, 'Checkpoint path for restoring (ex: models/biasfree_tfbn.ckpt-100) [%(default)s]')
+args.DEFINE_string('interpolatd_zs', None, 'z vector path [%(default)s]')
 # args.DEFINE_integer('f_dim', f_dim, 'Dimension of first layer in D [%(default)s]')
 FLAGS = args.FLAGS
 
@@ -373,12 +379,16 @@ def trainGAN(is_dummy=False, checkpoint=None, name=model_name):
             sess.run(tf.assign(global_step, epoch + 1))
 
 
-def testGAN(trained_model_path=None, n_batches=32):
+def testGAN(trained_model_path=None, n_batches=2, z_vector_path=None):
     init()
-
+    
+    #savename='save-16K'
+    savename=aaaaaaaaaaaaaa
+    
+    
     z_vector = tf.placeholder(shape=[batch_size,z_size],dtype=tf.float32) 
     net_g_test = generator(z_vector, phase_train=True, reuse=False)
-    #net_g_test = generator(z_vector, phase_train=True, reuse=False)
+    #net_g_test = generator(z_vector, phase_train=True, reuse=True)#ideally would like to reuse weights? But error.
     # vis = visdom.Visdom()
     saver = tf.train.Saver()
 
@@ -387,61 +397,50 @@ def testGAN(trained_model_path=None, n_batches=32):
         saver.restore(sess, trained_model_path) 
 
 
-
-        """
-        i = 0
-        stddev = 0.33
-        
-        while True:
-            i += 1
-            try:
-                #next_sigma = float( input('Please enter the standard deviation of normal distribution [{}]: '.format(stddev)) or stddev )
-                next_sigma = stddev #Let's just generate here exactly as we did in training
+        #If usign particular zvectors from interpolation:
+        #z_vector_path is path to z vector numpy array
+        if z_vector_path:
+            savename += '__interpolated_results'
+            z_sample = np.load(z_vector_path).astype(np.float32) #shape is Npoints x 200, using Npoints=batchsize (32)
+            g_out = sess.run(net_g_test,feed_dict={z_vector:z_sample})
+            z_out = z_sample
+                    
+                    
+            
+            
+        #Ifjustgeneratign new random z vectors:
+        else:
+            # output generated objects
+            #g_out = np.array([])
+            #z_out = np.array([])
+            for j in range(n_batches):
+                next_sigma = 0.33 # float(raw_input())
                 z_sample = np.random.normal(0, next_sigma, size=[batch_size, z_size]).astype(np.float32)
                 g_objects = sess.run(net_g_test,feed_dict={z_vector:z_sample})
-                # save_visualization(g_objects, save_path='test_{}_{}.jpg'.format(i, next_sigma))
-                scipy.misc.imssave('test_{0}_{1}.jpg'.format(i, next_sigma), g_objects)
-                # id_ch = np.random.randint(0, batch_size, 4)
-                # for i in range(4):
-                    # print (g_objects[id_ch[i]].max(), g_objects[id_ch[i]].min(), g_objects[id_ch[i]].shape)
-                    # if g_objects[id_ch[i]].max() > 0.5:
-                        # d.plotVoxelVisdom(np.squeeze(g_objects[id_ch[i]]>0.5), vis, '_'.join(map(str,[i])))
-            except:
-                break
-        """
-        
-        
-        
-        # output generated chairs
-        #g_out = np.array([])
-        #z_out = np.array([])
-        for j in range(n_batches):
-            next_sigma = 0.33 # float(raw_input())
-            z_sample = np.random.normal(0, next_sigma, size=[batch_size, z_size]).astype(np.float32)
-            g_objects = sess.run(net_g_test,feed_dict={z_vector:z_sample})
-            #id_ch = np.random.randint(0, batch_size, 4)
-            
-            
-            for i in range(batch_size):
-                print(g_objects[i].max(), g_objects[i].min(), g_objects[i].shape)
-                #pickle.dump(g_objects, open('save-{0}-{1}-20K.p'.format(j, i), 'wb'))
+                #id_ch = np.random.randint(0, batch_size, 4)
                 
-                if j==0 and i==0:
+                
+    #            for i in range(batch_size):
+    #                print(g_objects[i].max(), g_objects[i].min(), g_objects[i].shape)
+    #                pickle.dump(g_objects, open('save-{0}-{1}-20K.p'.format(j, i), 'wb'))
+                
+                if j==0:
                     g_out = g_objects
                     z_out = z_sample
+                    #print(g_out.shape)
                 else:
                     g_out = np.vstack((g_out,g_objects))
                     z_out = np.vstack((z_out,z_sample))
+                    #print(g_out.shape)
         
                 
-        savename = 'save-11600partial'        
+        #savename='save-7800partial'
+        
         #pickle.dump(g_objects, open('output/{0}.p'.format(savename), 'wb'))
-        np.save('output/{0}.npy'.format(savename), g_objects)
-        np.save('output/{}_zvectors.npy'.format(savename),z_sample)
+        np.save('output/{0}.npy'.format(savename), g_out)
+        np.save('output/{}_zvectors.npy'.format(savename),z_out)
         #if g_objects[id_ch[i]].max() > 0.5:
         #    d.plotVoxelVisdom(np.squeeze(g_objects[id_ch[i]]>0.5), vis, '_'.join(map(str,[i])))
-
-
 
 
 
@@ -451,7 +450,12 @@ def main(_):
         trainGAN(is_dummy=FLAGS.dummy, checkpoint=FLAGS.ckpath, name=FLAGS.name)
     else:
         if FLAGS.ckpath:
-            testGAN(trained_model_path=FLAGS.ckpath)
+            if FLAGS.interpolatd_zs:
+                #generate 3D models of particular z vectors for interpolation 
+                #instead of justrandom z vectors
+                testGAN(trained_model_path=FLAGS.ckpath, z_vector_path=FLAGS.interpolatd_zs)
+            else:
+                testGAN(trained_model_path=FLAGS.ckpath)
         else:
             logger.error("Needs checkpoint path.")
 

@@ -60,20 +60,38 @@ interpolated = slerp(val, low, high)
 print(interpolated)
 """
 
-val_increment = 0.05
-current_val = 0
+
+
+zpath = r"chairs/save-16K_zvectors.npy"
+savename = 'interpolated_chairs_37_39'
+zvectors = np.load(zpath)
+#print(zvectors.shape)
+#Determined manually from plotting
+z1 = zvectors[37]
+z2 = zvectors[39]
+
+
+
+val_increment = 1./31. #use 31 sothattotal Npoints is same as batchsize 32 #0.05
+current_val = np.arange(0.,1.+val_increment,val_increment)
+#current_val = 0.
 current_interpolation = None
-while current_val < 1.0:
-  current_val += val_increment
-  low = np.ones(200)
-  high = np.arange(200)
-  interpolated = slerp(current_val, low, high).reshape((200, 1))
+#while current_val <= 1.0:
+for i in current_val:
+#  low = np.ones(200)
+#  high = np.arange(200)
+  interpolated = slerp(i, z1, z2).reshape((200, 1))
 
   if current_interpolation is None:
       current_interpolation = interpolated
   else:
       current_interpolation = np.concatenate((current_interpolation, interpolated), axis=1)
-
+  #current_val += val_increment
+    
+    
+current_interpolation = current_interpolation.T
+print(z1[:3])
 print(current_interpolation)
+print(z2[:3])
 print(current_interpolation.shape)
-np.save('interpolated', current_interpolation)
+np.save(savename, current_interpolation)

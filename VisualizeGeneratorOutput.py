@@ -34,14 +34,16 @@ npy = True #If should load a .npy file instead
 #npy_path = r"multicategory\save-11600partial.npy"#multicat
 #npy_path = r"multicategory\save-7800partial.npy"#multicat
 npy_path = r"chairs/save-16K.npy"#chairs#fig14(ind13) is pretty good. Use it as 1 of the chairs. #and id 24
-
 #Path when using 3d models produced from interpolations:
 npy_path = r"chairs/save-16K__interpolated_results.npy"
 
+#path when doing the airplanes
+npy_path = r"airplane/save-airplane10400.npy"
+npy_path = r"../save-airplane10400__interpolated_results.npy"#After interpolating
 
 
 
-PlotHistograms = True#True#False
+PlotHistograms = False#True#False
 PlotAllModels = True
 modelnum = 4 #which of the 3d models to visualize (up to int = batchsize) (32)
 
@@ -62,10 +64,14 @@ elif npy:
 batchsize = g_objects.shape[0]
 #print(g_objects)
 
+    
 #for k in [37,39]:#[13,37,39] #[24]#range(15,25):#range(batchsize):
 #for k in range(35,40):
-for k in [0]:#range(batchsize):
+#for k in range(batchsize):
 #for k in [0]:#range(6):
+    
+ids = np.arange(batchsize)
+for k in range(len(ids)):    
     
     if not PlotAllModels and k!=modelnum:
         continue
@@ -94,10 +100,11 @@ for k in [0]:#range(batchsize):
     
     #3D plot
     fig = plt.figure()
-    plt.title(str(modelnum))
+    plt.title('Generated Object, ID:'+str(k),fontsize=20)
     ax = fig.gca(projection='3d')
     ax.voxels(voxels, facecolors='r', edgecolor='k')
-#    plt.savefig("{0}_k{1}.png".format(savename,k))
-    w=www
-    plt.savefig("chair_{}.png".format(k))
+#    #plt.savefig("{0}_k{1}.png".format(savename,k))
+
+
+    plt.savefig("airplane_interpolated_{}.png".format(k))
     plt.close()

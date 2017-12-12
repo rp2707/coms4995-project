@@ -62,6 +62,9 @@ print(interpolated)
 
 
 
+
+
+"""
 zpath = r"chairs/save-16K_zvectors.npy"
 savename = 'interpolated_chairs_37_39'
 zvectors = np.load(zpath)
@@ -69,6 +72,16 @@ zvectors = np.load(zpath)
 #Determined manually from plotting
 z1 = zvectors[37]
 z2 = zvectors[39]
+"""
+
+
+#AIRPLANES
+zpath = r"airplane/save-airplane10400_zvectors.npy"
+savename = 'interpolated_airplanes_61_37'
+zvectors = np.load(zpath)
+z1 = zvectors[61]
+z2 = zvectors[37]
+
 
 
 

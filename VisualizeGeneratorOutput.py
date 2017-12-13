@@ -43,10 +43,23 @@ npy_path = r"../save-airplane10400__interpolated_results.npy"#After interpolatin
 
 
 
+
+
+
+#Final report 15 batches of chairs:
+npy_path = r"../chairs_480pts/chairs_15batches.npy"
+#Final interpolated results:
+npy_path = r"../chairs_480pts/save-16K_15batches__final__interpolated_results.npy"#Single batch of 32 interpolated points
+#Now that reordered to mke interpolations easier to see:
+npy_path = "X_out_for_tsne.npy"
+
+
+
+
 PlotHistograms = False#True#False
 PlotAllModels = True
 modelnum = 4 #which of the 3d models to visualize (up to int = batchsize) (32)
-
+PlotAverage_AllExamples = False#True
 
 # =============================================================================
 # Main
@@ -59,6 +72,39 @@ if not npy:
 elif npy:
     g_objects = np.load(npy_path)
   
+    
+    
+    
+    
+    
+    
+    
+#Look at the average object, to make sure our objects are different 
+#[not just averaging over trainign set]
+if PlotAverage_AllExamples:
+    voxels = np.squeeze(g_objects>0.5)#.5)
+    voxels = np.mean(voxels,axis=0)
+    
+    #If want to clean up edges (proxy for plotting largestconnected component):
+#    voxels[:10] = False
+#    voxels[-10:] = False
+#    voxels[:,:10] = False
+#    voxels[:,-10:] = False
+#    voxels[:,:,-10:] = False
+    
+    #3D plot
+    fig = plt.figure()
+    plt.title('Mean Object',fontsize=20)
+    ax = fig.gca(projection='3d')
+    ax.voxels(voxels, facecolors='r', edgecolor='k')
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 batchsize = g_objects.shape[0]
@@ -81,7 +127,7 @@ for k in range(len(ids)):
     #np.squeeze(g_objects[id_ch[i]]>0.5)
     #k = 0 #[0,batchsize] #default code has batchsize 32
     #Get s ingle example of a voxel model for viewing
-    voxels = np.squeeze(g_objects[k]>0.9)#.5)
+    voxels = np.squeeze(g_objects[k]>0.5)#.5)
     
     
     if PlotHistograms:
@@ -98,6 +144,26 @@ for k in range(len(ids)):
     voxels[:,-10:] = False
     voxels[:,:,-10:] = False
     
+    
+    voxels[:10] = False#X axis
+    voxels[-20:] = False#X axis
+    
+    voxels[:,:20] = False
+    voxels[:,-20:] = False
+    
+    voxels[:,:,-10:] = False #Z axis
+    
+    
+    """
+    voxels[:10] = False
+    voxels[-20:] = False
+    voxels[:,:10] = False
+    voxels[:,-20:] = False
+    voxels[:,:,-10:] = False #Z axis
+    """
+    
+    
+    
     #3D plot
     fig = plt.figure()
     plt.title('Generated Object, ID:'+str(k),fontsize=20)
@@ -106,5 +172,6 @@ for k in range(len(ids)):
 #    #plt.savefig("{0}_k{1}.png".format(savename,k))
 
 
-    plt.savefig("airplane_interpolated_{}.png".format(k))
+    plt.savefig("chair_interpolated_{}.png".format(k))
+#    plt.savefig("chair_{}.png".format(k))
     plt.close()

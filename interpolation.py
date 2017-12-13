@@ -75,14 +75,26 @@ z2 = zvectors[39]
 """
 
 
+
+
+"""
 #AIRPLANES
 zpath = r"airplane/save-airplane10400_zvectors.npy"
 savename = 'interpolated_airplanes_61_37'
 zvectors = np.load(zpath)
 z1 = zvectors[61]
 z2 = zvectors[37]
+"""
 
 
+
+
+#Final report: many Chairs
+zpath = r"../chairs_480pts/save-16K_15batches_zvectors.npy"
+savename = 'interpolated_chairs_403_59'
+zvectors = np.load(zpath)
+z1 = zvectors[403]
+z2 = zvectors[59]
 
 
 val_increment = 1./31. #use 31 sothattotal Npoints is same as batchsize 32 #0.05

@@ -49,13 +49,42 @@ def Compare_Latent_to_3D(X,Z):
     
     Z - array of shape Nexamples x Ndims (e.g. 500 x 200)
     """
-    d_Z__L2 = Get_Distances_L2(Z).flatten()
+    d_Z__L2 = Get_Distances_L2(Z)#.flatten()
 #    d_X__L2 = Get_Distances_L2(X).flatten()
-    d_X__Jaccard = Get_Distances_Jaccard(X).flatten()
+    d_X__Jaccard = Get_Distances_Jaccard(X)#.flatten()
+    print('Done calculating distances')
+    
+    
+    #Since there are some garbage generated results, 
+    #for a given object, only look at the distance to the nearest K
+    x = []
+    z = []
+    K = 2#5 nearest
+    for pt in range(d_X__Jaccard.shape[0]):
+        inds = np.argsort(d_X__Jaccard[pt])[:K]
+        x += list(d_X__Jaccard[pt][inds])
+        z += list(d_Z__L2[pt][inds])
+    
+    
+    
+    
+    #Plot values for single object
+#    d_Z__L2 = d_Z__L2[:480]
+#    d_X__Jaccard = d_X__Jaccard[:480]
+    
+    
+#    #To not plot diagonal terms [distance 0 from point to itself]
+#    d_Z__L2 = d_Z__L2[d_Z__L2>0.]
+##    d_X__L2 = d_X__L2[d_X__L2>0.]
+#    d_X__Jaccard = d_X__Jaccard[d_X__Jaccard>0.]
+    
+
     
     plt.figure()
     plt.title('High-D vs. Low-D Distance Correlations')
-    plt.plot(d_X__Jaccard,d_Z__L2,marker='o',linsetyle='None')
+#    plt.plot(d_X__Jaccard.flatten(), d_Z__L2.flatten(), marker='o', linestyle='None')
+#    plt.plot(d_X__L2.flatten(), d_Z__L2.flatten(), marker='o', linestyle='None')
+    plt.plot(x,z, marker='o', linestyle='None')
     plt.xlabel('High-D Jaccard Distance',fontsize=20)
     plt.ylabel('Low-D L2 Distance',fontsize=20)
     plt.show()
@@ -66,3 +95,22 @@ def Compare_Latent_to_3D(X,Z):
     
 #Y = np.random.randint(0,2,size=(500,64**3)).astype(bool)
 #D = Get_Distances_Jaccard(Y) #Takes about 30 secs on laptop CPU
+    
+    
+    
+if __name__ == "__main__":
+    Xpath = r"../chairs_480pts/chairs_15batches.npy"
+    Zpath = r"../chairs_480pts/save-16K_15batches_zvectors.npy"
+    X = np.load(Xpath)
+    Z = np.load(Zpath)
+    Npoints = X.shape[0]
+    X = X.reshape(Npoints,64**3)
+    #Similar to in plotting, to say occupied you need to threshold > T: (.9 or .5)
+    X = X>0.9
+    
+    #just plot a few points for now:
+    K=50;X=X[:K];Z=Z[:K]
+    
+    Compare_Latent_to_3D(X,Z)
+    
+    

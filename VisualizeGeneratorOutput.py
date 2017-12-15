@@ -57,8 +57,13 @@ npy_path = "X_out_for_tsne.npy"
 
 
 PlotHistograms = False#True#False
-PlotAllModels = True
-modelnum = 4 #which of the 3d models to visualize (up to int = batchsize) (32)
+PlotAllModels = False#True
+#which of the 3d models to visualize (up to int = batchsize) #For final output: look at some that look interesting on tSNE plots
+#modelnum = [280,256,324,292] #ironing board looking chairs
+#modelnum = [484,92,504,388,348,300] #Very similar weird cheirs
+#modelnum = [340,500,376,420,288,196] #roudn back sofa chairs
+modelnum = [0,40,380,68,144,124,272]
+
 PlotAverage_AllExamples = False#True
 
 # =============================================================================
@@ -108,7 +113,7 @@ if PlotAverage_AllExamples:
     
     
 batchsize = g_objects.shape[0]
-#print(g_objects)
+#print(batchsize)
 
     
 #for k in [37,39]:#[13,37,39] #[24]#range(15,25):#range(batchsize):
@@ -119,7 +124,7 @@ batchsize = g_objects.shape[0]
 ids = np.arange(batchsize)
 for k in range(len(ids)):    
     
-    if not PlotAllModels and k!=modelnum:
+    if not PlotAllModels and k not in modelnum:
         continue
     
     print(k)
@@ -145,13 +150,13 @@ for k in range(len(ids)):
     voxels[:,:,-10:] = False
     
     
-    voxels[:10] = False#X axis
-    voxels[-20:] = False#X axis
-    
-    voxels[:,:20] = False
-    voxels[:,-20:] = False
-    
-    voxels[:,:,-10:] = False #Z axis
+#    voxels[:10] = False#X axis
+#    voxels[-20:] = False#X axis
+#    
+#    voxels[:,:20] = False
+#    voxels[:,-20:] = False
+#    
+#    voxels[:,:,-10:] = False #Z axis
     
     
     """
@@ -166,10 +171,12 @@ for k in range(len(ids)):
     
     #3D plot
     fig = plt.figure()
-    plt.title('Generated Object, ID:'+str(k),fontsize=20)
+    
     ax = fig.gca(projection='3d')
     ax.voxels(voxels, facecolors='r', edgecolor='k')
 #    #plt.savefig("{0}_k{1}.png".format(savename,k))
+    plt.title('ID:'+str(k),fontsize=20)
+    plt.show()
 
 
     plt.savefig("chair_interpolated_{}.png".format(k))

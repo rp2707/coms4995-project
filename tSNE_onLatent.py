@@ -130,6 +130,9 @@ for i in range(len(ids)):
     #Only plot those interpolated indices:
     if i <= 33:
         plt.text(Y[i,0],Y[i,1],ids[i],fontsize=15)
+    #plot a ~random subset of labels since there are a lot and they overlap:
+    elif i % 4 == 0:
+            plt.text(Y[i,0],Y[i,1],ids[i],fontsize=15)
 
     #Want to inset 3d axes in this one, but not working, so for now just do separately
     """
